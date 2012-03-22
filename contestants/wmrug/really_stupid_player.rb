@@ -121,8 +121,8 @@ class ReallyStupidPlayer
     end
     begin
       y = rand(10)
-      x = (rand(4)*3)+(y%3) + offset
-    end until (x>00 && x<=9 && state[y][x] == :unknown)
+      x = (rand(4)*3)+(y%3) - offset
+    end until (x>=0 && x<=9 && state[y][x] == :unknown)
     
       
     # end
