@@ -4,16 +4,32 @@ class StupidPlayer
   end
 
   def new_game
-    [
-      [0, 0, 5, :across],
-      [0, 1, 4, :across],
-      [0, 2, 3, :across],
-      [0, 3, 3, :across],
-      [0, 4, 2, :across]
-    ]
+    @@current_game ||= 0
+    puts @@current_game
+    @@current_game += 1
+    if @@current_game == 1
+      [
+        [0, 0, 5, :across],
+        [0, 1, 4, :across],
+        [0, 2, 3, :across],
+        [0, 3, 3, :across],
+        [0, 4, 2, :across]
+      ]
+    else
+      [
+        [4, 0, 5, :across],
+        [4, 1, 4, :across],
+        [4, 2, 3, :across],
+        [4, 3, 3, :across],
+        [4, 4, 2, :across]
+      ]
+    end
   end
 
   def take_turn(state, ships_remaining)
-    [rand(10), rand(10)]
+    begin
+      pos = [rand(10), rand(10)]
+    end until state[pos[1]][pos[0]]==:unknown
+    pos
   end
 end

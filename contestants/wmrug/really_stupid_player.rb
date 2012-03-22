@@ -85,39 +85,44 @@ class ReallyStupidPlayer
 
 
     # # else
+    # begin
+    #   if @@last_pos
+    #     if state[@@last_pos[1]][@@last_pos[0]]==:hit
+    #       @@last_hits << @@last_pos
+    #     end
+    #     if @@last_pos==[9,9]
+    #       @@last_pos = [-2,0]
+    #     end
+    #     if @@last_pos==[7,9]
+    #       @@last_pos = [-1,0]
+    #     end
+    #     if @@last_pos[0]>=7
+    #       x = (@@last_pos[0]+1)%3
+    #       y = @@last_pos[1]+1
+    #     else
+    #       x = @@last_pos[0]+3
+    #       y = @@last_pos[1]
+    #     end
+    #     @@last_pos = [x,y]
+    #   else
+    #     x = 0
+    #     y = 0
+    #     @@last_pos = [x,y]
+    #   end
+    # end until state[y][x] == :unknown
+
+    taken = state.flatten.reject{|p| p==:unknown}
+    offset = 0
+    if taken.size > 33
+      offset = 1
+    end
+    if taken.size > 66
+      offset = 2
+    end
     begin
-      if @@last_pos
-        if state[@@last_pos[1]][@@last_pos[0]]==:hit
-          @@last_hits << @@last_pos
-        end
-        if @@last_pos==[9,9]
-          @@last_pos = [-2,0]
-        end
-        if @@last_pos==[7,9]
-          @@last_pos = [-1,0]
-        end
-        if @@last_pos[0]>=7
-          x = (@@last_pos[0]+1)%3
-          y = @@last_pos[1]+1
-        else
-          x = @@last_pos[0]+3
-          y = @@last_pos[1]
-        end
-        @@last_pos = [x,y]
-      else
-        x = 0
-        y = 0
-        @@last_pos = [x,y]
-      end
-    end# until state[y][x] == :unknown
-
-
-      # y = rand(10)
-      # x = (rand(3)*3)+(y%3)
-      # until (state[y][x] == :unknown)
-      #   y = rand(10)
-      #   x = (rand(3)*3)+(y%3)
-      # end
+      y = rand(10)
+      x = (rand(4)*3)+(y%3) + offset
+    end until (x>00 && x<=9 && state[y][x] == :unknown)
     
       
     # end
