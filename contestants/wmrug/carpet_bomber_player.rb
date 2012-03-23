@@ -1,7 +1,9 @@
-class ReallyStupidPlayer
+class CarpetBomberPlayer
+  # Formerly ReallyStupidPlayer
+
   def name
     # Uniquely identify your player
-    "Karl & Shaun"
+    "Carpet Bomber"
   end
 
   def new_game
@@ -16,6 +18,8 @@ class ReallyStupidPlayer
       
     end
     @@last_pos = nil
+    @@last_hits = []
+
     # return an array of 5 arrays containing
     # [x,y, length, orientation]
     # e.g.
@@ -26,44 +30,58 @@ class ReallyStupidPlayer
     #   [2, 2, 3, :across],
     #   [9, 7, 2, :down]
     # ]
-    # max = 10
-    # squares = []
-    # %w(5 4 3 3 2).map do |len|
-    #   dir = [:down, :across][rand(2)]
-    #   if dir == :down
-    #     pos = [rand(max), rand(max-len)]
 
-    #   else
-    #     pos = [rand(max-len), rand(max)]
-    #   end
+    
+    max = 9
+    squares = []
+    [5, 4, 3, 3, 2].map do |len|
+      begin
+        dir = [:down, :across][rand(2)]
+        
+        pos = occupancy = nil
 
-    # end
-    case @@current_game
-    when 1
-      [
-        [5, 9, 5, :across],
-        [6, 8, 4, :across],
-        [6, 7, 3, :across],
-        [6, 6, 3, :across],
-        [9, 6, 2, :down]
-      ]
-    when 2
-      [
-        [5, 0, 5, :across],
-        [0, 5, 4, :down],
-        [9, 6, 3, :down],
-        [0, 9, 3, :across],
-        [8, 9, 2, :across]
-      ]
-    else
-      [
-        [1, 4, 5, :down],
-        [5, 5, 4, :across],
-        [4, 9, 3, :across],
-        [6, 2, 3, :across],
-        [2, 1, 2, :across]
-      ]
+        if dir == :down
+          pos = [rand(max), rand(max-len)]
+          occupancy = (0...len).map{|n| [pos[0], pos[1]+n]}
+        else
+          pos = [rand(max-len), rand(max)]
+          occupancy = (0...len).map{|n| [pos[0]+n, pos[1]]}
+        end
+      end until (squares & occupancy).empty?
+      squares += occupancy
+
+      [pos[0], pos[1], len, dir]
     end
+    
+
+
+    # case @@current_game
+    # when 1
+    #   [
+    #     [5, 9, 5, :across],
+    #     [6, 8, 4, :across],
+    #     [6, 7, 3, :across],
+    #     [6, 6, 3, :across],
+    #     [9, 6, 2, :down]
+    #   ]
+    # when 2
+    #   [
+    #     [5, 0, 5, :across],
+    #     [0, 5, 4, :down],
+    #     [9, 6, 3, :down],
+    #     [0, 9, 3, :across],
+    #     [8, 9, 2, :across]
+    #   ]
+    # else
+    #   [
+    #     [1, 4, 5, :down],
+    #     [5, 5, 4, :across],
+    #     [4, 9, 3, :across],
+    #     [6, 2, 3, :across],
+    #     [2, 1, 2, :across]
+    #   ]
+    # end
+
   end
 
   def take_turn(state, ships_remaining)
@@ -80,7 +98,12 @@ class ReallyStupidPlayer
 
     # #   if (x > 0 && state[x-1][y]==:hit)
     if res = @@previous_last_hits.pop
-      return res
+      if @@last_pos.nil? || state[@@last_pos[1]][@@last_pos[0]]==:hit
+        @@last_pos = res
+        return res
+      else
+        @@previous_last_hits.clear
+      end
     end
 
 
@@ -111,6 +134,9 @@ class ReallyStupidPlayer
     #   end
     # end until state[y][x] == :unknown
 
+    if @@last_pos && state[@@last_pos[1]][@@last_pos[0]]==:hit
+      @@last_hits << @@last_pos
+    end
     taken = state.flatten.reject{|p| p==:unknown}
     offset = 0
     if taken.size > 33
