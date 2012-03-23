@@ -17,7 +17,13 @@ module Battleship
 
     def new_game
       @player = @player_class.new
+      @player.stdin=@stdin if @player.respond_to?(:stdin=)
       @player.new_game
+    end
+
+    def stdin=(val)
+      @stdin = val
+      @player.stdin=val if @player.respond_to?(:stdin=)
     end
   end
 
